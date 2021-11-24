@@ -4,8 +4,8 @@ class ScreenObject
     private Meta::PluginSetting@ m_posSetting;
     private Meta::PluginSetting@ m_sizSetting;
 
-    private float m_x = 0.1;
-    private float m_y = 0.1;
+    private float m_x = 0.25;
+    private float m_y = 0.25;
     private vec2 m_pos;
     private vec2 m_size;
 
@@ -14,8 +14,8 @@ class ScreenObject
 
     ScreenObject(const string&in posSettingName, const string&in sizSettingName)
     {
-        @m_posSetting = GetSetting(posSettingName);
-        @m_sizSetting = GetSetting(sizSettingName);
+        @m_posSetting = MetaUtil::GetSettingFromPluginSiteID(posSettingName, 103);
+        @m_sizSetting = MetaUtil::GetSettingFromPluginSiteID(sizSettingName, 103);
     }
 
     void UpdatePosition(int dt)
@@ -42,16 +42,6 @@ class ScreenObject
         vec2 scaledPos = m_pos / (screenSize - m_size);
         bool xCollisionHandled = false;
         bool yCollisionHandled = false;
-
-        // Collision with a boundary
-        if ((scaledPos.x > 1.0 && m_x > 0.0) || (scaledPos.x < 0.0 && m_x < 0.0))
-        {
-            m_x *= -1.0;
-        }
-        if ((scaledPos.y > 1.0 && m_y > 0.0) || (scaledPos.y < 0.0 && m_y < 0.0))
-        {
-            m_y *= -1.0;
-        }
 
         // Collision with another object
         for (uint i = 0; i < objects.Length; i++)
@@ -81,21 +71,15 @@ class ScreenObject
                 }
             }
         }
-    }
 
-    private Meta::PluginSetting@ GetSetting(const string&in settingName)
-    {
-        Meta::PluginSetting@ setting = null;
-        Meta::Plugin@ plugin = Meta::GetPluginFromSiteID(103);
-        Meta::PluginSetting@[]@ settings = plugin.GetSettings();
-        for (uint i = 0; i < settings.Length; i++)
+        // Collision with a boundary
+        if ((scaledPos.x > 1.0 && m_x > 0.0) || (scaledPos.x < 0.0 && m_x < 0.0))
         {
-            if (settings[i].VarName == settingName)
-            {
-                @setting = settings[i];
-                break;
-            }
+            m_x *= -1.0;
         }
-        return setting;
+        if ((scaledPos.y > 1.0 && m_y > 0.0) || (scaledPos.y < 0.0 && m_y < 0.0))
+        {
+            m_y *= -1.0;
+        }
     }
 }
