@@ -21,10 +21,6 @@ void Main()
             objs[i].UpdateCollision(objs);
         }
 
-        for (uint i = 0; i < objs.Length; i++)
-        {
-        }
-
         prevFrameTime = Time::Now;
     }
 }

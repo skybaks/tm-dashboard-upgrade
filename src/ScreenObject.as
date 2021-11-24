@@ -30,8 +30,8 @@ class ScreenObject
 
         float dts = float(dt) / 1000.0;
 
-        scaledPos.x += m_x * dts;
-        scaledPos.y += m_y * dts;
+        scaledPos.x = Math::Clamp(scaledPos.x + m_x * dts, 0.0, 1.0);
+        scaledPos.y = Math::Clamp(scaledPos.y + m_y * dts, 0.0, 1.0);
 
         m_posSetting.WriteVec2(scaledPos);
     }
@@ -40,32 +40,29 @@ class ScreenObject
     {
         vec2 screenSize = vec2(Draw::GetWidth(), Draw::GetHeight());
         vec2 scaledPos = m_pos / (screenSize - m_size);
-        bool xCollisionHandled = false;
-        bool yCollisionHandled = false;
 
         // Collision with another object
         for (uint i = 0; i < objects.Length; i++)
         {
             if (this is objects[i]) { continue; }
-            if (xCollisionHandled && yCollisionHandled) { break; }
 
             vec2 oPos = objects[i].Pos;
             vec2 oSize = objects[i].Size;
 
-            if ((m_pos.x < oPos.x && (m_pos.x + m_size.x) > oPos.x && m_x > 0.0)
-                || (m_pos.x < (oPos.x + oSize.x) && (m_pos.x + m_size.x) > (oPos.x + oSize.x) && m_x < 0.0))
+            if ((m_pos.x <= oPos.x && (m_pos.x + m_size.x) >= oPos.x && m_x > 0.0)
+                || (m_pos.x <= (oPos.x + oSize.x) && (m_pos.x + m_size.x) >= (oPos.x + oSize.x) && m_x < 0.0))
             {
-                if ((m_pos.y < (oPos.y + oSize.y) && (m_pos.y + m_size.y) > (oPos.y + oSize.y))
-                    || (m_pos.y < oPos.y && (m_pos.y + m_size.y) > oPos.y))
+                if ((m_pos.y <= (oPos.y + oSize.y) && (m_pos.y + m_size.y) >= (oPos.y + oSize.y))
+                    || (m_pos.y <= oPos.y && (m_pos.y + m_size.y) >= oPos.y))
                 {
                     m_x *= -1.0;
                 }
             }
-            if ((m_pos.y < (oPos.y + oSize.y) && (m_pos.y + m_size.y) > (oPos.y + oSize.y) && m_y < 0.0)
-                || (m_pos.y < oPos.y && (m_pos.y + m_size.y) > oPos.y) && m_y > 0.0)
+            if ((m_pos.y <= (oPos.y + oSize.y) && (m_pos.y + m_size.y) >= (oPos.y + oSize.y) && m_y < 0.0)
+                || (m_pos.y <= oPos.y && (m_pos.y + m_size.y) >= oPos.y) && m_y > 0.0)
             {
-                if ((m_pos.x < oPos.x && (m_pos.x + m_size.x) > oPos.x)
-                    || (m_pos.x < (oPos.x + oSize.x) && (m_pos.x + m_size.x) > (oPos.x + oSize.x)))
+                if ((m_pos.x <= oPos.x && (m_pos.x + m_size.x) >= oPos.x)
+                    || (m_pos.x <= (oPos.x + oSize.x) && (m_pos.x + m_size.x) >= (oPos.x + oSize.x)))
                 {
                     m_y *= -1.0;
                 }
@@ -73,11 +70,11 @@ class ScreenObject
         }
 
         // Collision with a boundary
-        if ((scaledPos.x > 1.0 && m_x > 0.0) || (scaledPos.x < 0.0 && m_x < 0.0))
+        if ((scaledPos.x >= 1.0 && m_x > 0.0) || (scaledPos.x <= 0.0 && m_x < 0.0))
         {
             m_x *= -1.0;
         }
-        if ((scaledPos.y > 1.0 && m_y > 0.0) || (scaledPos.y < 0.0 && m_y < 0.0))
+        if ((scaledPos.y >= 1.0 && m_y > 0.0) || (scaledPos.y <= 0.0 && m_y < 0.0))
         {
             m_y *= -1.0;
         }

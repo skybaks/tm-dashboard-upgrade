@@ -3,7 +3,7 @@ name = "Dashboard Upgrade"
 author = "skybaxrider"
 category = "Overlay"
 blocks = [ ]
-version = "1.0"
+version = "0.1.0"
 
 [script]
 imports = [ ]
