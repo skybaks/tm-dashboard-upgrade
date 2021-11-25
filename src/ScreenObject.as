@@ -3,19 +3,28 @@ class ScreenObject
 {
     private Meta::PluginSetting@ m_posSetting;
     private Meta::PluginSetting@ m_sizSetting;
+    private Meta::PluginSetting@ m_visSetting;
 
     private float m_x = 0.25;
     private float m_y = 0.25;
     private vec2 m_pos;
     private vec2 m_size;
+    private bool m_collidable;
 
     vec2 Pos { get { return m_pos; } }
     vec2 Size { get { return m_size; } }
+    bool Collidable { get { return m_collidable; } }
 
-    ScreenObject(const string&in posSettingName, const string&in sizSettingName)
+    ScreenObject(const string&in posSettingName, const string&in sizSettingName, const string&in visSettingName)
     {
         @m_posSetting = MetaUtil::GetSettingFromPluginSiteID(posSettingName, 103);
         @m_sizSetting = MetaUtil::GetSettingFromPluginSiteID(sizSettingName, 103);
+        @m_visSetting = MetaUtil::GetSettingFromPluginSiteID(visSettingName, 103);
+    }
+
+    void UpdateState()
+    {
+        m_collidable = m_visSetting.ReadBool();
     }
 
     void UpdatePosition(int dt)
@@ -44,7 +53,7 @@ class ScreenObject
         // Collision with another object
         for (uint i = 0; i < objects.Length; i++)
         {
-            if (this is objects[i]) { continue; }
+            if (this is objects[i] || !objects[i].Collidable) { continue; }
 
             vec2 oPos = objects[i].Pos;
             vec2 oSize = objects[i].Size;
